@@ -167,6 +167,94 @@ public class Ch1ArraysStrings {
 
     }
 
+    /* 
+     * 1.4 Solution 2 - Checking for odds as we search through the string,
+     * slightly more o
+     */
+    public boolean isPermutationofPalindrome2(String phrase){
+        
+        int table[] = new int[26]; //26 letters in alphabet
+        int oddCount=0;
+
+        //foreach loop to search through entire phrase
+        for (char c: phrase.toCharArray()){
+            int x = charToInt(c);
+
+            //if it is apart of the alphabet
+            if (x !=-1){
+                if ((table[x] %2) == 1){
+                    //increment the odd count
+                    oddCount++;
+                } else {
+                    //ran into a duplicate, now no longer an odd count
+                    oddCount--;
+                }
+            }
+        }
+        //returns true if palindrome, false if not
+        return (oddCount <= 1);
+
+    }
+
+    /* 
+     * 1.4 Solution 3 - Using bitwise operators, super complicated,
+     * took me three days to figure out
+     */
+    
+     /**
+      * 
+      * @param bitVector - the bit used to to flip bits to specify that a character was 
+      * @param index - current numeric value of the char being looked at in the String
+      * @return - the newbit mask
+      */
+     int toggle(int bitVector, int index){
+        
+        //error checking, only want alphabetical values
+        if (index < 0){
+            return bitVector;
+        }
+
+        int mask = 1 << index; //shift one to the bit that it represents
+        bitVector ^= mask; //XOR it with itself so that if it already exists, flips back to 0
+        return bitVector;
+     }
+
+     /**
+      * 
+      * @param phrase - given string
+      * @return - the bitVector that represents the string
+      */
+     int createBitVector(String phrase){
+        int bitVector = 0;
+        for (char c :phrase.toCharArray()){
+            int x = charToInt(c); //convert to int
+            bitVector = toggle(bitVector, x); //toggle the ith bit at char location
+        }
+        return bitVector;
+     }
+
+     /**
+      * Example: 00010000-1 = 00001111
+                 00010000 & 00001111 = 0
+      * @param bitVector - the bitvector that holds all the locations of the chars
+      * @return -if its a permuation or not
+      */
+     boolean checkAtMostOneBitSet(int bitVector){
+        return((bitVector & (bitVector-1)) == 0);
+     }
+
+     boolean isPermutationofPalindrome3(String phrase){
+         int bitVector = createBitVector(phrase);
+         return checkAtMostOneBitSet(bitVector);
+     }
+
+
+
+
+
+
+
+
 
 
     /*
@@ -189,6 +277,8 @@ public class Ch1ArraysStrings {
             +"1.2 Are 'abc' & 'abcd' permutations of each other? answer = "+isPermutation(tester, permutation)+"\n"
             +"1.3 Before whitespace replace: 'a b' after: "+string.toString()+"\n"
             +"1.4 Solution 1: Is Tact Coa a permuation of a palindrome? answer = "+isPermutationofPalindrome(palindrome)+"\n"
+            +"1.4 Solution 2: Is Tact Coa a permuation of a palindrome? answer = "+isPermutationofPalindrome2(palindrome)+"\n"
+            +"1.4 Solution 3: Is Tact Coa a permuation of a palindrome? answer = "+isPermutationofPalindrome3(palindrome)+"\n"
         );
     }
 
