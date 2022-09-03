@@ -11,6 +11,20 @@ public class App {
          */
         Ch1ArraysStrings chapter1 = new Ch1ArraysStrings();
         System.out.println(chapter1.toString());
+
+        /*
+         * Calling Chapter 2 Object
+         */
+        Ch2LinkedLists chapter2 = new Ch2LinkedLists();
+        chapter2.linkedListRunner();
+
+        /*
+         * Calling extra practice
+         */
+        ExtraPractice extraPractice = new ExtraPractice();
+        int[] stocks = {7,1,5,3,6,4};
+        System.out.println("Extra Practice");
+        System.out.println("Maximized profit from stock picks: "+extraPractice.stockPick(stocks));
     }
 
 

@@ -59,7 +59,7 @@ public class Ch1ArraysStrings {
     }
 
     /* 1.3 Question
-     * "Write a method to replace all spaces in a string with '%20'. You may assume that the string has siffucient space at the end to hold the additional characters."
+     * "Write a method to replace all spaces in a string with '%20'. You may assume that the string has sufficient space at the end to hold the additional characters."
      */
     public void replaceSpaces(char[] string, int trueLength){
 
@@ -207,7 +207,7 @@ public class Ch1ArraysStrings {
       * @param index - current numeric value of the char being looked at in the String
       * @return - the newbit mask
       */
-     int toggle(int bitVector, int index){
+     private int toggle(int bitVector, int index){
         
         //error checking, only want alphabetical values
         if (index < 0){
@@ -224,7 +224,7 @@ public class Ch1ArraysStrings {
       * @param phrase - given string
       * @return - the bitVector that represents the string
       */
-     int createBitVector(String phrase){
+     private int createBitVector(String phrase){
         int bitVector = 0;
         for (char c :phrase.toCharArray()){
             int x = charToInt(c); //convert to int
@@ -239,16 +239,231 @@ public class Ch1ArraysStrings {
       * @param bitVector - the bitvector that holds all the locations of the chars
       * @return -if its a permuation or not
       */
-     boolean checkAtMostOneBitSet(int bitVector){
+    private boolean checkAtMostOneBitSet(int bitVector){
         return((bitVector & (bitVector-1)) == 0);
-     }
+    }
 
-     boolean isPermutationofPalindrome3(String phrase){
+    private boolean isPermutationofPalindrome3(String phrase){
          int bitVector = createBitVector(phrase);
          return checkAtMostOneBitSet(bitVector);
-     }
+    }
+
+    /* 1.5 Question: There are three types of edits that can be performed on strings: insert a character, remove a character,
+     * or replace a character, or replace a character. Given two strings, write a function to check if they are one edit (or zero edits)
+     */
+    
+    /**
+     * @param one -first string given to check
+     * @param two -second string given to check
+     * @return - boolean value telling you if the two strings 
+     * truly are one edit away to being equivalent
+     */
+    public boolean oneEditAway(String one, String two){
+        if (one.length() == two.length()){
+            return (replaceEdit(one, two));
+        } else if ((one.length()+1) == two.length()){
+            insertDelete(one, two);
+        } else if ((one.length()-1) == two.length()){
+            insertDelete(two, one);
+        }
+        return false;
+    }
+
+    /**
+     * @param one -first string given to check
+     * @param two -second string given to check
+     * @return - boolean value if they can be edited
+     */
+    private boolean replaceEdit(String one, String two){
+        
+        boolean foundDiff = false;
+
+        for (int i=0; i<one.length(); i++){
+            if (one.charAt(i) != two.charAt(i)){
+                if (foundDiff){
+                    return false; //if here, we already found a difference, no go
+                }
+                foundDiff=true;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param one -longer string
+     * @param two - shorter string
+     * @return -if they are one edit away
+     */
+    private boolean insertDelete(String one, String two){
+        int i=0;
+        int j=0;
+
+        //loop through both strings
+        while (i < one.length() && j < two.length()){
+            //check if they're not the same
+            if (one.charAt(i) != two.charAt(j)){
+                //if they're not equal, one is ahead
+                if (i != j){
+                    return false; //if not the same, not one edit away
+                }
+                j++; //keep moving
+            } else {
+                i++;
+                j++;
+            }
+        }
+        return true;
+        
+    }
+
+    public boolean oneEditAway2(String one, String two){
+        
+        //checking the length
+        if (Math.abs(one.length() - two.length()) > 1){
+            return false;
+        }
+
+        //clever way to get the longest string
+        String s1 = (one.length() < two.length() ? one: two);
+        String s2 = (one.length() < two.length() ? two: one);
+
+        int i=0;
+        int j=0;
+        boolean foundDiff=false;
+
+        //loop through until end of string
+        while (i < s1.length() && j < s2.length()){
+            //if they're not the same we have some work to do
+            if (s1.charAt(i) != s2.charAt(j)){
+
+                //multiple differences, nope
+                if (foundDiff){
+                    return false;
+                }
+                foundDiff=true;
+                //replace sine the same length
+                if (s1.length() == s2.length()){
+                    i++; //move shorter string 
+                }
+            } else {
+                i++; //always move shorter if matching
+            }
+            j++;//second string is always moved
+        }
+        return true;
+    }
+
+    /* 1.6 Question: There are three types of edits that can be performed on strings: insert a char
+     * or replace a character, or replace a character. Given two strings, write a function to check if they are one edit (or zero edits)
+     */
 
 
+    /*Inefficient Solution*/
+    public String compressBad (String str){
+        
+        String newString = "";
+        int consecutive =0;
+
+        for (int i=0; i < str.length(); i++){
+            
+            consecutive++;
+
+            if (i + 1 >= str.length() || str.charAt(i) != str.charAt(i+1)){
+                newString += ""+str.charAt(i)+consecutive;
+                consecutive=0;
+            }
+
+        }
+        return newString;
+    }
+
+    /*String Builder Solution*/
+    public String compressGood(String given){
+
+        //count of consecutive strings
+        int consecutive=0;
+
+        //string builder, does not have 6 different sequences to copy
+        StringBuilder comped= new StringBuilder();
+
+        for (int i=0; i < given.length(); i++){
+
+            consecutive++;
+
+            //check to see if the next one is different, if so append
+            if (i+1 >= given.length() || given.charAt(i) != given.charAt(i+1)){
+                comped.append(given.charAt(i));
+                comped.append(consecutive);
+                consecutive=0;
+            }
+        }
+
+        //checking after you built it, return smallest one
+        return (given.length() <= comped.length()? given : comped.toString());
+    }
+
+    /*1.7 Rotate Matrix: Given an image represented by an N x N matrix, where each pixel in the image
+     *is represented by an integer, wirte a method to rotate the image by 90 degrees. Can you do this in place?*/
+
+    public boolean rotateMatrix(int matrix[][]){
+
+        //edge case testing
+        if (matrix.length == 0 || matrix.length != matrix[0].length){
+            return false;
+        }
+        printMatrix(matrix);
+        //get number of rows
+        int n = matrix.length;
+        System.out.println("Number of layers: "+(n/2));
+        
+
+
+        //looping through each "layer" of the matrix
+        for (int layer=0; layer < n/2; layer++){
+            //getting the first row entry in the layer            
+            int first = layer;
+            //getting the last entry in the layer
+            int last = n-1-layer;
+
+            for (int i=first; i <last; i++){
+                
+                //the iterator
+                int offset = i-first;
+                int top = matrix[first][i];
+                System.out.println("Offset: "+offset+" OG top: "+top);
+
+                //left -> top
+                matrix[first][i] = matrix[last-offset][first];
+
+                //bottom -> left
+                matrix[last-offset][first] =matrix[last][last-offset];
+
+                //right ->bottom
+                matrix[last][last-offset]=matrix[i][last];
+
+                //top -> right
+                matrix[i][last] = top; //right ->saved top
+
+
+            }
+        }
+        printMatrix(matrix);
+        return true;
+
+    }
+
+
+    public void printMatrix(int matrix[][]){
+
+        for (int i=0; i <matrix.length; i++){
+            System.out.print("[");
+            for (int j=0; j < matrix[0].length; j++){
+                System.out.print("{"+matrix[i][j]+"}");
+            }
+            System.out.println("]");
+        }
+    }
+ 
 
 
 
@@ -271,6 +486,19 @@ public class Ch1ArraysStrings {
         string[2]='b';
         string[3]='\0';
         replaceSpaces(string, string.length-2);
+
+        int matrix[][] = {
+            {1,2,3,4},
+            {5,6,7,8},
+            {9,10,11,12},
+            {13,14,15,16}
+        };
+
+        int matrixOdd[][] = {
+            {1,2,3},
+            {4,5,6},
+            {7,8,9},
+        };
         return (
             "Ch1 Arrays & Strings\n"
             +"1.1 Does 'abc' have all unique chars? answer = "+isUniqueChars(tester)+"\n"
@@ -279,6 +507,13 @@ public class Ch1ArraysStrings {
             +"1.4 Solution 1: Is Tact Coa a permuation of a palindrome? answer = "+isPermutationofPalindrome(palindrome)+"\n"
             +"1.4 Solution 2: Is Tact Coa a permuation of a palindrome? answer = "+isPermutationofPalindrome2(palindrome)+"\n"
             +"1.4 Solution 3: Is Tact Coa a permuation of a palindrome? answer = "+isPermutationofPalindrome3(palindrome)+"\n"
+            +"1.5 Solution 1: Is pale, ple, one edit away? answer = "+oneEditAway("pale", "ple")+"\n"
+            +"1.5 Solution 2: Is pale, ple, one edit away? answer = "+oneEditAway2("ple", "pale")+"\n"
+            +"1.6 Solution 1 (Bad): Compressed aaabbccaaa answer = "+compressBad("aaabbccaaa")+"\n"
+            +"1.6 Solution 2 (Good): Compressed aaabbccaaa answer = "+compressGood("aaabbccaaa")+"\n"
+            +"1.7 Matrix Rotation with 4 X 4 Matrix:"+rotateMatrix(matrix)+"\n"
+            +"1.7 Matrix Rotation with 3 X 3 Matrix:"+rotateMatrix(matrixOdd)+"\n"
+            
         );
     }
 
