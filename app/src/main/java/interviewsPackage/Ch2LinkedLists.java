@@ -57,6 +57,37 @@ public class Ch2LinkedLists {
         return index;
     }
 
+    /* 2.4 Question
+     * "Write code to partition a linked list around the node x so that all values less than x are to the left and all values greater are to the right, they do not need to be sorted."
+     */
+
+    /*
+     * 2.4
+     *  Solution 1 - Unstable approach, re-assigns the tail and head accordingly in place, O(N) time complexity, very cool solution
+     */
+    public static Node partitionLinkedList (Node node, int given) {
+        Node head = node;
+        Node tail = node;
+
+        while (node != null){
+            Node next = node.getNextNode();
+            if (given < node.getData()){
+                //insert at head
+                node.setNextNode(head);
+                head = node;
+            } else {
+                //insert at tail
+                tail.setNextNode(node);
+                tail = node;
+            }
+            node = next;
+        }
+        tail.setNextNode(null);
+        return head;
+    }
+
+
+
     public static void linkedListRunner(){
         LinkedListNode linkedList = new LinkedListNode();
         linkedList.insert(4);
@@ -69,12 +100,18 @@ public class Ch2LinkedLists {
         Node head = linkedList.getHead();
         System.out.println("2.1: Removing duplicates from a Linked List without a buffer:");
         System.out.println("Linked List before dup removal: ");
-        linkedList.display();
+        linkedList.display(head);
         deleteDupsBuffer(head);
         System.out.println("After dup removal:");
-        linkedList.display();
+        linkedList.display(head);
         head = linkedList.getHead();
         kthToLast(head, 2);
+        System.out.println("2.4: Partitioning Linked List around the value 12:");
+        System.out.println("Linked List before partition:");
+        linkedList.display(head);
+        System.out.println("Linked List after partition:");
+        head=partitionLinkedList(head, 1);
+        linkedList.display(head);
 
 
     }

@@ -22,7 +22,7 @@ public class LinkedListNode {
         }
     }
 
-    public static void display(){
+    public static void display(Node head){
         if(head != null){
             Node currentNode = head;
             while(currentNode.getNextNode() != null){
